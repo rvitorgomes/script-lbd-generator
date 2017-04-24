@@ -1,31 +1,50 @@
-// criar um sql query builder
+/* SQL SERVER RANDOM QUERY BUILDER
+*
+*  Build your queries with random data
+*
+*  Rubens Victor Gomes
+*  https://github.com/rvitorgomes
+*/
 
-var fs = require('fs');
-var sql = require('sql-query'), sqlQuery = sql.Query();
-var axios = require('axios');
+const   fs = require('fs'),
+        sql = require('sql-query'),
+        axios = require('axios'),
+        sqlQuery = sql.Query(),
+        sqlInsert = sqlQuery.insert();
 
-const turnoType = [
-    "Matutino",
-    "Vespertino",
-    "Noturno"
-]
+/* Setup Options and Database Rules */
+const types = require('./lib/definition_types');
 
-var sqlInsert = sqlQuery.insert();
+/* Random Values Generators */
+const randomize = require('./lib/randomize');
 
 // funcionario
 // id_fun, nome_fun, ramal_fun, turno_fun, cpf_fun, senha_fun
-const funcionarioValues = new Array();
+
+// const functionarioKeys = {
+//     nome_fun: 'João',
+//     ramal_fun: randomize.randomInteger(4),
+//     turno_fun: types.turnoType[randomize.randomInteger(1) % types.turnoType.length],
+//     cpf_fun: randomize.randomInteger(11),
+//     senha_fun: randomize.randomInteger(6)
+// }
+
+const funcionarioValues = new Array(10);
 const funcionarioMaxLength = 10;
+
+funcionarioValues.map( v => {
+    sqlInsert.into('dbo.Funcionario').set(new functionarioKeys()).build;
+})
+
 
 for (var index = 0; index < funcionarioMaxLength ; index++) {
      funcionarioValues[index] = sqlInsert.into('dbo.Funcionario').set({
             nome_fun : 'João',
-            ramal_fun: Math.floor(Math.random() * 10000),
-            turno_fun: turnoType[index % turnoType.length],
-            cpf_fun: Math.floor(Math.random() * 100000000000), // 11 digitos
-            senha_fun: Math.floor(Math.random() * 1000000) // 6 digitos
+            ramal_fun: randomize.randomInteger(4),
+            turno_fun: types.turnoType[index % types.turnoType.length],
+            cpf_fun: randomize.randomInteger(11), // 11 digitos
+            senha_fun: randomize.randomInteger(6), // 6 digitos
         }).build();
-    console.log(funcionarioValues[index]);
 }
 
 
@@ -34,20 +53,11 @@ for (var index = 0; index < funcionarioMaxLength ; index++) {
 const cozinhaValues = new Array();
 const cozinhaMaxLength = 10;
 
-const hierarquiaType = [
-    "Chefe",
-    "Cozinheiro",
-    "Auxiliar de Cozinha",
-    "Garçom"
-]
-
-
 for (var index = 0; index < cozinhaMaxLength ; index++) {
      cozinhaValues[index] = sqlInsert.into('dbo.cozinha').set({
             id_fun: Math.floor(Math.random() * 10),
-            hierarquia: hierarquiaType[index % hierarquiaType.length]
+            hierarquia: types.hierarquiaType[index % types.hierarquiaType.length]
         }).build();
-    console.log(cozinhaValues[index]);
 }
 
 // enfermeiro
@@ -55,35 +65,11 @@ for (var index = 0; index < cozinhaMaxLength ; index++) {
 const enfermeiroValues = new Array();
 const enfermeiroMaxLength = 10;
 
-const especializacaoType = [
-    "Pediatria",
-    "Geral",
-    "Gerontologia",
-    "Neurologia",
-    "Psicologia",
-    "Nutrição",
-    "Endocrinologia",
-    "Dermatologia",
-    "Cardiologia",
-    "Fonoaudiologia",
-    "Ginecologia",
-    "Homeopatia",
-    "Infectologia",
-    "Odontologia",
-    "Oftalmologia",
-    "Oncologia",
-    "Ortopedia",
-    "Otorrinolaringologia",
-    "Pneumologia",
-    "Urologia"
-]
-
 for (var index = 0; index < enfermeiroMaxLength ; index++) {
      enfermeiroValues[index] = sqlInsert.into('dbo.Enfermeiro').set({
             id_fun: Math.floor(Math.random() * 10),
-            especializacao_enf: especializacaoType[index % especializacaoType.length ]
+            especializacao_enf: types.especializacaoType[index % types.especializacaoType.length ]
         }).build();
-    console.log(enfermeiroValues[index]);
 }
 
 // limpeza
@@ -96,7 +82,6 @@ for (var index = 0; index < limpezaMaxLength ; index++) {
             id_fun: Math.floor(Math.random() * 10),
             andar_limp: Math.floor(Math.random() * 100)
         }).build();
-    console.log(limpezaValues[index]);
 }
 
 // medico
@@ -108,10 +93,9 @@ for (var index = 0; index < medicoMaxLength ; index++) {
      medicoValues[index] = sqlInsert.into('dbo.Medicos').set({
             id_fun: Math.floor(Math.random() * 10),
             CRM : Math.floor(Math.random() * 10000),
-            Especialidade_medico: especializacaoType[index % especializacaoType.length ],
+            Especialidade_medico: types.especializacaoType[index % types.especializacaoType.length ],
             num_sala_medico: Math.floor(Math.random() * 10000)
         }).build();
-    console.log(medicoValues[index]);
 }
 
 // paciente
@@ -119,26 +103,15 @@ for (var index = 0; index < medicoMaxLength ; index++) {
 const pacienteValues = new Array();
 const pacienteMaxLength = 10;
 
-const sexoType = [
-    "F",
-    "M"
-]
-
-const nameDuo = [
-    "Mariana",
-    "Fernando"
-]
-
 for (var index = 0; index < pacienteMaxLength ; index++) {
      pacienteValues[index] = sqlInsert.into('dbo.Pacientes').set({
-            nome_paciente: nameDuo[ index % nameDuo.length ],
+            nome_paciente: types.nameDuo[ index % types.nameDuo.length ],
             dta_nasc_paciente: new Date('10/10/1991').toISOString(),
-            sexo_paciente: sexoType[index % sexoType.length],
+            sexo_paciente: types.sexoType[index % types.sexoType.length],
             restricao_alimentar: 'Nenhuma',
             restricao_medicamento: 'Nenhuma',
             CPF_paciente: Math.floor(Math.random() * 100000000000), // 11 digitos
         }).build();
-    console.log(pacienteValues[index]);
 }
 
 
@@ -147,21 +120,11 @@ for (var index = 0; index < pacienteMaxLength ; index++) {
 const planoValues = new Array();
 const planoMaxLength = 10;
 
-const planoTypes = [
-    "Odontologico",
-    "UTI",
-    "Geral",
-    "Sênior",
-    "Funerário",
-    "Infantil"
-]
-
 for (var index = 0; index < planoMaxLength ; index++) {
      planoValues[index] = sqlInsert.into('dbo.Plano_de_saude').set({
            Empresa: 'EACH',
-           Tipo_plano: planoTypes[index % planoTypes.length]
+           Tipo_plano: types.planoTypes[index % types.planoTypes.length]
         }).build();
-    console.log(planoValues[index]);
 }
 
 
@@ -175,7 +138,6 @@ for (var index = 0; index < pacientePlanoMaxLength ; index++) {
            id_plan_saude: Math.floor(Math.random() * 10),
            id_paciente: Math.floor(Math.random() * 10)
         }).build();
-    console.log(pacientePlanoValues[index]);
 }
 
 
@@ -189,8 +151,6 @@ for (var index = 0; index < planoTipoLength ; index++) {
            id_plan_saude: Math.floor(Math.random() * 10),
            id_tip_acomod: Math.floor(Math.random() * 10)
         }).build();
-
-    console.log(planoTipoValues[index]);
 }
 
 // hospital
@@ -202,8 +162,6 @@ for (var index = 0; index < hospitalMaxLength ; index++) {
      hospitalValues[index] = sqlInsert.into('dbo.Sedes_hospital').set({
            Nome: `Hospital Santa Maria ${index}`
         }).build();
-
-    console.log(hospitalValues[index]);
 }
 
 //tipo acomodacao
@@ -216,8 +174,6 @@ for (var index = 0; index < acomodacaoTipoMaxLength ; index++) {
            descricao_acomod: 'Acomodação Confortável para o paciente',
            acompanhante_acomod: (( index % 2 === 0 ) ? 1 : 0)
         }).build();
-
-    console.log(acomodacaoTipoValues[index]);
 }
 
 
@@ -233,12 +189,10 @@ for (var index = 0; index < acomodacaoMaxLength ; index++) {
            qtd_leitos: index % 4,
            num_acomod: index % 4,
            status_leito: (( index % 2 === 0 ) ? 1 : 0),
-           especialidade_leito: especializacaoType[ index % especializacaoType.length ],
+           especialidade_leito: types.especializacaoType[ index % types.especializacaoType.length ],
            id_hosp: Math.floor(Math.random() * 10),
            id_tip_acomod: Math.floor(Math.random() * 10)
         }).build();
-
-    console.log(acomodacaoValues[index]);
 }
 
 
@@ -253,8 +207,6 @@ for (var index = 0; index < leitoMaxLength ; index++) {
            status_leito: (( index % 2 === 0 ) ? 1 : 0),
            id_acomo: Math.floor(Math.random() * 10)
         }).build();
-
-    console.log(leitoValues[index]);
 }
 
 
@@ -271,8 +223,6 @@ for (var index = 0; index < pacienteLeitoMaxLength ; index++) {
            dta_hor_ent: new Date('01/01/1994').toISOString(),
            dta_hor_sai: new Date('01/01/1994').toISOString(),
         }).build();
-
-    console.log(pacienteLeitoValues[index]);
 }
 
 // limpeza acomodacao
@@ -289,8 +239,6 @@ for (var index = 0; index < limpezaAcomodacaoMaxLength ; index++) {
            hor_fim_acom: new Date('01/01/1994').toISOString(),
            foto_limpa_acom: 'Limpeza Finalizda'
         }).build();
-
-    console.log(limpezaAcomodacaoValues[index]);
 }
 
 
@@ -308,8 +256,6 @@ for (var index = 0; index < limpezaLeitoMaxLength ; index++) {
            dta_hor_ter_lei: new Date('01/01/1994').toISOString(),
            foto_limpa_lei: 'Limpeza Finalizda'
         }).build();
-
-    console.log(limpezaLeitoValues[index]);
 }
 
 // remedio
@@ -321,8 +267,6 @@ for (var index = 0; index < remedioMaxLength ; index++) {
      remedioValues[index] = sqlInsert.into('dbo.Remedio').set({
            nome_remedio: 'Dipirona'
         }).build();
-
-    console.log(remedioValues[index]);
 }
 
 
@@ -335,8 +279,6 @@ for (var index = 0; index < produtoMaxLength ; index++) {
      produtoValues[index] = sqlInsert.into('dbo.Produto').set({
            descricao_produto: 'Alcool'
         }).build();
-
-    console.log(produtoValues[index]);
 }
 
 // produto_acomodacao
@@ -353,8 +295,6 @@ for (var index = 0; index < produtoAcomodacaoMaxLength ; index++) {
            dta_hor_ent_prd: new Date('01/01/1994').toISOString(),
            status_prod_acom: (( index % 2 === 0 ) ? 1 : 0),
         }).build();
-
-    console.log(produtoAcomodacaoValues[index]);
 }
 
 // produto_leito
@@ -371,8 +311,6 @@ for (var index = 0; index < produtoLeitoMaxLength ; index++) {
            dta_hor_ent_prd_lei: new Date('01/01/1994').toISOString(),
            status_leito: (( index % 2 === 0 ) ? 1 : 0),
         }).build();
-
-    console.log(produtoLeitoValues[index]);
 }
 
 // refeicao
@@ -386,8 +324,6 @@ for (var index = 0; index < refeicaoLength ; index++) {
            descricao_refeicao: `Prato Refeicao ${index}`,
            calorias: Math.floor(Math.random() * 100),
         }).build();
-
-    console.log(refeicaoValues[index]);
 }
 
 
@@ -405,8 +341,6 @@ for (var index = 0; index < refeicaoPacienteLength ; index++) {
            observacao_ref_pac: 'Se alimentou corretamente',
            dta_hor_ref_pac: new Date('01/04/2017').toISOString(),
         }).build();
-
-    console.log(refeicaoPacienteValues[index]);
 }
 
 
@@ -427,8 +361,6 @@ for (var index = 0; index < remedioPacienteLength ; index++) {
            qtd_rem_pac: index,
            observacao_rem_pac: 'Reagiu bem à medicação'
         }).build();
-
-    console.log(remedioPacienteValues[index]);
 }
 
 
@@ -444,8 +376,6 @@ for (var index = 0; index < controleLength ; index++) {
            dia_hor_sai: new Date('01/04/2017').toISOString(),
            cpf_ent_sai: Math.floor(Math.random() * 100000000000), // 11 digitos
         }).build();
-
-    console.log(controleValues[index]);
 }
 
 // agenda
@@ -467,7 +397,8 @@ for (var index = 0; index < agendaLength ; index++) {
 
 /* Generate SQL Script
 *  Note:
-*  This scripts doesnt work directly into Sql Server, first remove ` caracteres.
+*  This scripts work directly into:
+*   - Sql Server;
 */
 
 const finalScript = [
@@ -498,8 +429,11 @@ const finalScript = [
     agendaValues
 ];
 
-finalScript.forEach( (value, index ) =>
-    fs.appendFile('script_lbd_01.txt', value , (err) => {
+fs.writeFileSync('script_lbd_01.txt', '');
+
+finalScript.forEach( (value, index) =>
+    fs.appendFile('script_lbd_01.txt', value.map( row => '\n' + row.replace(/`/g, '') ),
+    (err) => {
         if (err) throw err;
         console.log(`SQL Script ${index} Generated`);
     })

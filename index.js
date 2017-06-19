@@ -6,11 +6,7 @@
 *  https://github.com/rvitorgomes
 */
 
-const   fs = require('fs'),
-        sql = require('sql-query'),
-        axios = require('axios'),
-        sqlQuery = sql.Query(),
-        sqlInsert = sqlQuery.insert();
+const   fs = require('fs');
 
 /* Setup Options and Database Rules */
 const types = require('./lib/definition_types');
@@ -18,381 +14,446 @@ const types = require('./lib/definition_types');
 /* Random Values Generators */
 const randomize = require('./lib/randomize');
 
-// funcionario
-// id_fun, nome_fun, ramal_fun, turno_fun, cpf_fun, senha_fun
+/*      Funcionario
+	@integer        id_fun,
+	@string         nome_fun,
+	@integer        ramal_fun,
+	@type           turno_fun,
+	@integer        cpf_fun,
+	@integer        senha_fun
+*/
 
-// const functionarioKeys = {
-//     nome_fun: 'João',
-//     ramal_fun: randomize.randomInteger(4),
-//     turno_fun: types.turnoType[randomize.randomInteger(1) % types.turnoType.length],
-//     cpf_fun: randomize.randomInteger(11),
-//     senha_fun: randomize.randomInteger(6)
-// }
+let funcionarioSchemaFunction = () => ({
+	nome_fun: randomize.randomName(),
+	ramal_fun: randomize.randomInteger(4),
+	turno_fun: randomize.randomType(types.turnoType),
+	cpf_fun: randomize.randomInteger(10), // 11 digitos
+	senha_fun: randomize.randomInteger(6), // 6 digitos
+});
 
-const funcionarioValues = new Array(10);
-const funcionarioMaxLength = 10;
+let funcionarioValues = randomize.randomInsert('dbo.Funcionario', funcionarioSchemaFunction, 1000);
 
-funcionarioValues.map( v => {
-    sqlInsert.into('dbo.Funcionario').set(new functionarioKeys()).build;
+
+/*      cozinha
+	@integer        id_fun,
+	@type           hierarquia
+*/
+
+let cozinhaSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	hierarquia: randomize.randomType(types.hierarquiaType),
 })
 
-
-for (var index = 0; index < funcionarioMaxLength ; index++) {
-     funcionarioValues[index] = sqlInsert.into('dbo.Funcionario').set({
-            nome_fun : 'João',
-            ramal_fun: randomize.randomInteger(4),
-            turno_fun: types.turnoType[index % types.turnoType.length],
-            cpf_fun: randomize.randomInteger(11), // 11 digitos
-            senha_fun: randomize.randomInteger(6), // 6 digitos
-        }).build();
-}
+let cozinhaValues = randomize.randomInsert('dbo.cozinha', cozinhaSchemaFunction, 1000);
 
 
-// cozinha
-// id_fun, hierarquia
-const cozinhaValues = new Array();
-const cozinhaMaxLength = 10;
+/*      Enfermeiro
+	@integer        id_fun,
+	@type           Area,
+	@type           especializacao_enf
+*/
 
-for (var index = 0; index < cozinhaMaxLength ; index++) {
-     cozinhaValues[index] = sqlInsert.into('dbo.cozinha').set({
-            id_fun: Math.floor(Math.random() * 10),
-            hierarquia: types.hierarquiaType[index % types.hierarquiaType.length]
-        }).build();
-}
+let enfermeiroSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	especializacao_enf: randomize.randomType(types.especializacaoType),
+})
 
-// enfermeiro
-// id_fun, Area, especializacao_enf
-const enfermeiroValues = new Array();
-const enfermeiroMaxLength = 10;
+let enfermeiroValues = randomize.randomInsert('dbo.Enfermeiro', enfermeiroSchemaFunction, 1000);
 
-for (var index = 0; index < enfermeiroMaxLength ; index++) {
-     enfermeiroValues[index] = sqlInsert.into('dbo.Enfermeiro').set({
-            id_fun: Math.floor(Math.random() * 10),
-            especializacao_enf: types.especializacaoType[index % types.especializacaoType.length ]
-        }).build();
-}
+/*      Limpeza
+	@integer        id_fun,
+	@integer        andar_limp
+*/
 
-// limpeza
-// id_fun, andar_limp
-const limpezaValues = new Array();
-const limpezaMaxLength = 10;
+let limpezaSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	andar_limp: randomize.randomInteger()
+})
 
-for (var index = 0; index < limpezaMaxLength ; index++) {
-     limpezaValues[index] = sqlInsert.into('dbo.Limpeza').set({
-            id_fun: Math.floor(Math.random() * 10),
-            andar_limp: Math.floor(Math.random() * 100)
-        }).build();
-}
+let limpezaValues = randomize.randomInsert('dbo.Limpeza', limpezaSchemaFunction, 1000);
 
-// medico
-// id, crm, especialidade, ramal, num_sala
-const medicoValues = new Array();
-const medicoMaxLength = 10;
+/*      Medicos
+	@integer        id_fun,
+	@integer        CRM,
+	@type           Especialidade_medico,
+	@integer        ramal,
+	@integer        num_sala_medico
+*/
 
-for (var index = 0; index < medicoMaxLength ; index++) {
-     medicoValues[index] = sqlInsert.into('dbo.Medicos').set({
-            id_fun: Math.floor(Math.random() * 10),
-            CRM : Math.floor(Math.random() * 10000),
-            Especialidade_medico: types.especializacaoType[index % types.especializacaoType.length ],
-            num_sala_medico: Math.floor(Math.random() * 10000)
-        }).build();
-}
+let medicoSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	CRM :  randomize.randomInteger(4),
+	Especialidade_medico: randomize.randomType(types.especializacaoType),
+	num_sala_medico:  randomize.randomInteger()
+})
 
-// paciente
-// id_paciente, nome_paciente, dta_nasc_paciente, sexo_paciente, restricao_alimentar, restricao_medicamento, CPF_paciente
-const pacienteValues = new Array();
-const pacienteMaxLength = 10;
+let  medicoValues = randomize.randomInsert('dbo.Medicos', medicoSchemaFunction, 1000);
 
-for (var index = 0; index < pacienteMaxLength ; index++) {
-     pacienteValues[index] = sqlInsert.into('dbo.Pacientes').set({
-            nome_paciente: types.nameDuo[ index % types.nameDuo.length ],
-            dta_nasc_paciente: new Date('10/10/1991').toISOString(),
-            sexo_paciente: types.sexoType[index % types.sexoType.length],
-            restricao_alimentar: 'Nenhuma',
-            restricao_medicamento: 'Nenhuma',
-            CPF_paciente: Math.floor(Math.random() * 100000000000), // 11 digitos
-        }).build();
-}
+/*      Pacientes
+	@integer        id_paciente,
+	@string         nome_paciente,
+	@date           dta_nasc_paciente,
+	@type           sexo_paciente,
+	@text           restricao_alimentar,
+	@text           restricao_medicamento,
+	@integer        CPF_paciente
+*/
 
+let pacienteSchemaFunction = () => ({
+	nome_paciente: randomize.randomName(),
+	dta_nasc_paciente: randomize.randomDate(),
+	sexo_paciente: randomize.randomType(types.sexoType),
+	restricao_alimentar: 'Nenhuma',
+	restricao_medicamento: 'Nenhuma',
+	CPF_paciente: randomize.randomInteger(10) // 11 digitos
+})
 
-// plano de saude
-// id_plan_saude, Empresa, Tipo_plano
-const planoValues = new Array();
-const planoMaxLength = 10;
+let pacienteValues = randomize.randomInsert('dbo.Pacientes', pacienteSchemaFunction, 10000);
 
-for (var index = 0; index < planoMaxLength ; index++) {
-     planoValues[index] = sqlInsert.into('dbo.Plano_de_saude').set({
-           Empresa: 'EACH',
-           Tipo_plano: types.planoTypes[index % types.planoTypes.length]
-        }).build();
-}
+/*      Plano_de_saude
+	@integer        id_plan_saude,
+	@string         Empresa,
+	@type           Tipo_plano
+*/
 
+let planoSchemaFunction = () => ({
+    Empresa: 'EACH',
+    Tipo_plano: randomize.randomType(types.planoTypes)
+})
 
-//plano_saude_paciente
-// id_paciente, id_plan_saude
-const pacientePlanoValues = new Array();
-const pacientePlanoMaxLength = 10;
+let planoValues = randomize.randomInsert('dbo.Plano_de_saude', planoSchemaFunction, 1000);
 
-for (var index = 0; index < pacientePlanoMaxLength ; index++) {
-     pacientePlanoValues[index] = sqlInsert.into('dbo.plano_saude_paciente').set({
-           id_plan_saude: Math.floor(Math.random() * 10),
-           id_paciente: Math.floor(Math.random() * 10)
-        }).build();
-}
+/*      plano_saude_paciente
+	@integer        id_paciente,
+	@integer        id_plan_saude
+*/
 
+let pacientePlanoSchemaFunction = () => ({
+	id_plan_saude: randomize.randomInteger(),
+	id_paciente: randomize.randomInteger()
+});
 
-// plano_tipo_acomodacao
-// id_plan_saude, id_tip_acomod
-const planoTipoValues = new Array();
-const planoTipoLength = 10;
+let pacientePlanoValues = randomize.randomInsert('dbo.plano_saude_paciente', pacientePlanoSchemaFunction, 1000);
 
-for (var index = 0; index < planoTipoLength ; index++) {
-     planoTipoValues[index] = sqlInsert.into('dbo.plano_tipo_acomodacao').set({
-           id_plan_saude: Math.floor(Math.random() * 10),
-           id_tip_acomod: Math.floor(Math.random() * 10)
-        }).build();
-}
-
-// hospital
-// id_hosp, Nome, Endereco
-const hospitalValues = new Array();
-const hospitalMaxLength = 10;
-
-for (var index = 0; index < hospitalMaxLength ; index++) {
-     hospitalValues[index] = sqlInsert.into('dbo.Sedes_hospital').set({
-           Nome: `Hospital Santa Maria ${index}`
-        }).build();
-}
-
-//tipo acomodacao
-// id_tip_acomod, descricao_acomod, acompanhante_acomod
-const acomodacaoTipoValues = new Array();
-const acomodacaoTipoMaxLength = 10;
-
-for (var index = 0; index < acomodacaoTipoMaxLength ; index++) {
-     acomodacaoTipoValues[index] = sqlInsert.into('dbo.Tipo_acomodacao').set({
-           descricao_acomod: 'Acomodação Confortável para o paciente',
-           acompanhante_acomod: (( index % 2 === 0 ) ? 1 : 0)
-        }).build();
-}
+/*      plano_tipo_acomodacao
+	@integer        id_plan_saude,
+	@integer        id_tip_acomod
+*/
 
 
-// acomodacao
-// id_acomod, Andar, qtd_leitos, num_acomod, status_leito, especialidade_leito, id_hosp, id_tip_acomod
-const acomodacaoValues = new Array();
-const acomodacaoMaxLength = 10;
+let planoTipoSchemaFunction = () => ({
+	id_plan_saude: randomize.randomInteger(),
+	id_tip_acomod: randomize.randomInteger(1)
+})
+
+let planoTipoValues = randomize.randomInsert('dbo.plano_tipo_acomodacao', planoTipoSchemaFunction, 1000);
 
 
-for (var index = 0; index < acomodacaoMaxLength ; index++) {
-     acomodacaoValues[index] = sqlInsert.into('dbo.Acomodacao').set({
-           Andar: index % 15,
-           qtd_leitos: index % 4,
-           num_acomod: index % 4,
-           status_leito: (( index % 2 === 0 ) ? 1 : 0),
-           especialidade_leito: types.especializacaoType[ index % types.especializacaoType.length ],
-           id_hosp: Math.floor(Math.random() * 10),
-           id_tip_acomod: Math.floor(Math.random() * 10)
-        }).build();
-}
+/*      Sedes_hospital
+	@integer        id_hosp,
+	@string         Nome,
+	@string         Endereco
+*/
+let hospitalSchemaFunction = () => ({
+	Nome: `Hospital ${randomize.randomName()}`,
+	Endereco: `Av. ${randomize.randomName()}, 1234`
+})
+
+let hospitalValues = randomize.randomInsert('dbo.Sedes_hospital', hospitalSchemaFunction, 1000);
+
+/*      Tipo_acomodacao
+	@integer        id_tip_acomod,
+	@text           descricao_acomod,
+	@boolean        acompanhante_acomod
+*/
+
+let acomodacaoTipoSchemaFunction = () => ({
+	descricao_acomod: 'Acomodação Confortável para o paciente',
+	acompanhante_acomod: randomize.randomBoolean()
+})
+
+let acomodacaoTipoValues = randomize.randomInsert('dbo.Tipo_acomodacao', acomodacaoTipoSchemaFunction, 1000);
 
 
-// leito
-// id_leito, num_leito, status_leito, id_acomo
-const leitoValues = new Array();
-const leitoMaxLength = 10;
+/*      Acomodacao
+	@integer        id_acomod,
+	@integer        Andar,
+	@integer        qtd_leitos,
+	@integer        num_acomod,
+	@boolean        status_leito,
+	@type           especialidade_leito,
+	@integer        id_hosp,
+	@integer        id_tip_acomod
+*/
 
-for (var index = 0; index < leitoMaxLength ; index++) {
-     leitoValues[index] = sqlInsert.into('dbo.Leito').set({
-           num_leito: Math.floor(Math.random() * 10),
-           status_leito: (( index % 2 === 0 ) ? 1 : 0),
-           id_acomo: Math.floor(Math.random() * 10)
-        }).build();
-}
+let acomodacaoSchemaFunction = () => ({
+	Andar: randomize.randomBetweeen(0, 15),
+	qtd_leitos: randomize.randomInteger(),
+	num_acomod: randomize.randomInteger(),
+	status_leito: randomize.randomBoolean(),
+	especialidade_leito: randomize.randomType(types.especializacaoType),
+	id_hosp: randomize.randomInteger(),
+	id_tip_acomod: randomize.randomInteger(1),
+});
+
+let acomodacaoValues = randomize.randomInsert('dbo.Acomodacao', acomodacaoSchemaFunction, 1000);
+
+/*      Leito
+	@integer        id_leito,
+	@integer        num_leito,
+	@boolean        status_leito,
+	@integer        id_acomo
+*/
+
+let leitoSchemaFunction = () => ({
+	   num_leito: randomize.randomInteger(),
+	   status_leito: randomize.randomBoolean(),
+	   id_acomo: randomize.randomInteger()
+	});
+
+let leitoValues = randomize.randomInsert('dbo.Leito', leitoSchemaFunction, 1000);
+
+/*      pacientes_leito
+	@integer        id_pac_lei,
+	@integer        id_leito,
+	@integer        id_paciente,
+	@date           dta_hor_ent,
+	@date           dta_hor_sai,
+	@boolean        status_pac_lei
+*/
+
+let pacienteLeitoSchemaFunction = () => ({
+	status_pac_lei: randomize.randomBoolean(),
+	id_leito: randomize.randomInteger(),
+	id_paciente: randomize.randomInteger(),
+	dta_hor_ent: randomize.randomDate(),
+	dta_hor_sai: randomize.randomDate()
+});
+
+let pacienteLeitoValues = randomize.randomInsert('dbo.pacientes_leito', pacienteLeitoSchemaFunction, 1000);
+
+/*      limpeza acomodacao
+	@integer        id_limp_acom,
+	@integer        id_fun,
+	@integer        id_acomo,
+	@date           dta_hor_sol_acom,
+	@date           hor_ini_limp_acom,
+	@date           hor_fim_acom,
+	@text           foto_limpa_acom
+*/
+
+let limpezaAcomodacaoSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	id_acomo: randomize.randomInteger(),
+	dta_hor_sol_acom: randomize.randomDate(),
+	hor_ini_limp_acom: randomize.randomDate(),
+	hor_fim_acom: randomize.randomDate(),
+	foto_limpa_acom: 'Limpeza Finalizada'
+});
+
+let limpezaAcomodacaoValues = randomize.randomInsert('dbo.limpeza_acomodacao', limpezaAcomodacaoSchemaFunction, 1000);
+
+/*      limpeza leito
+	@integer        id_limp_lei,
+	@integer        id_fun,
+	@integer        id_lei,
+	@date           dta_hor_sol_lei,
+	@date           hor_ini_limp_lei,
+	@date           hor_fim_lei,
+	@text           foto_limpa_lei
+*/
+
+let limpezaLeitoSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	id_leito: randomize.randomInteger(),
+	dta_hor_sol_lei: randomize.randomDate(),
+	dta_hor_ini_lei: randomize.randomDate(),
+	dta_hor_ter_lei: randomize.randomDate(),
+	foto_limpa_lei: 'Limpeza Finalizada'
+});
+
+let limpezaLeitoValues = randomize.randomInsert('dbo.limpeza_leito', limpezaLeitoSchemaFunction, 1000);
+
+/*      Remedio
+	@integer        id_remedio,
+	@string         nome_remedio
+*/
+
+let remedioSchemaFunction = () => ({
+	nome_remedio: 'Dipirona'
+});
+
+let remedioValues = randomize.randomInsert('dbo.Remedio', remedioSchemaFunction, 1000);
+
+/*      Produto
+	@integer        id_prod,
+	@text           descricao_produto
+*/
+
+let produtoSchemaFunction = () => ({
+	descricao_produto: 'Alcool'
+});
+
+let produtoValues = randomize.randomInsert('dbo.Produto', produtoSchemaFunction, 1000);
+
+/*      produto_acomodacao
+	@integer        id_prd_aco,
+	@integer        id_fun,
+	@integer        id_acomo,
+	@integer        id_prod,
+	@date           dta_hor_sol_prd,
+	@date           dta_hor_ent_prd,
+	@boolean        status_prod_acom
+*/
+
+let produtoAcomodacaoSchemaFunction = () => ({
+	id_fun:  randomize.randomInteger(),
+	id_acomo:  randomize.randomInteger(),
+	id_prod:  randomize.randomInteger(),
+	dta_hor_sol_prd: randomize.randomDate(),
+	dta_hor_ent_prd: randomize.randomDate(),
+	status_prod_acom: randomize.randomBoolean()
+});
+
+let produtoAcomodacaoValues = randomize.randomInsert('dbo.produto_acomodacao', produtoAcomodacaoSchemaFunction, 1000);
+
+/*      produto_leito
+	@integer        id_prd_lei,
+	@integer        id_leito,
+	@integer        id_fun,
+	@integer        id_prod,
+	@date           dta_hor_sol_lei,
+	@date           dta_hor_ent_lei,
+	@boolean        status_leito
+*/
+
+let produtoLeitoSchemaFunction = () => ({
+	id_fun:  randomize.randomInteger(),
+	id_leito:  randomize.randomInteger(),
+	id_prod:  randomize.randomInteger(),
+	dta_hor_sol_prd_lei: randomize.randomDate(),
+	dta_hor_ent_prd_lei: randomize.randomDate(),
+	status_leito: randomize.randomBoolean()
+});
+
+let produtoLeitoValues = randomize.randomInsert('dbo.produto_leito', produtoLeitoSchemaFunction, 1000);
+
+/*      Refeicao
+	@integer        id_refeicao,
+	@date           horario,
+	@text           descricao_refeicao,
+	@integer        calorias
+*/
+
+let refeicaoSchemaFunction = () => ({
+	horario: randomize.randomDate(),
+	descricao_refeicao: `Prato Refeicao`,
+	calorias: randomize.randomInteger(2)
+});
+
+let refeicaoValues = randomize.randomInsert('dbo.Refeicao', refeicaoSchemaFunction, 1000);
+
+/*      refeicao_pacientes
+	@integer        id_ref_pac,
+	@integer        id_fun,
+	@integer        id_paciente,
+	@integer        id_refeicao,
+	@boolean        status_ref_pac,
+	@text           observacao_ref_pac,
+	@date           dta_hor_ref_pac
+*/
+
+let refeicaoPacienteSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	id_paciente: randomize.randomInteger(),
+	id_refeicao: randomize.randomInteger(),
+	status_ref_pac: randomize.randomBoolean(),
+	observacao_ref_pac: 'Se alimentou corretamente',
+	dta_hor_ref_pac: randomize.randomDate()
+});
+
+let refeicaoPacienteValues = randomize.randomInsert('dbo.refeicao_pacientes', refeicaoPacienteSchemaFunction, 1000);
+
+/*      remedio_paciente
+	@integer        id_rem_pac,
+	@integer        id_fun,
+	@integer        id_fun_med,
+	@integer        id_paciente,
+	@integer        id_remedio,
+	@date           dta_prescricao_rem_pac,
+	@date           dta_hora_apl_rem_pac,
+	@integer        qtd_rem_pac,
+	@text           observacao_rem_pac
+*/
+let remedioPacienteSchemaFunction = () => ({
+	id_fun: randomize.randomInteger(),
+	id_paciente: randomize.randomInteger(),
+	id_paciente: randomize.randomInteger(),
+	id_fun_med: randomize.randomInteger(),
+	id_remedio: randomize.randomInteger(),
+	dta_prescricao_rem_pac: randomize.randomDate(),
+	dta_hora_apl_rem_pac: randomize.randomDate(),
+	qtd_rem_pac: randomize.randomInteger(),
+	observacao_rem_pac: 'Reagiu bem à medicação'
+});
+
+let remedioPacienteValues = randomize.randomInsert('dbo.remedio_paciente', remedioPacienteSchemaFunction, 5000);
+
+/*      controle_ent_sai
+	@integer        id_ent_sai,
+	@date           dia_hor_ent,
+	@date           dia_hor_sai,
+	@integer        cpf_ent_sai,
+	@integer        id_acomo
+*/
+
+let controleSchemaFunction = () => ({
+	id_acomo: randomize.randomInteger(),
+	dia_hor_ent: randomize.randomDate(),
+	dia_hor_sai: randomize.randomDate(),
+	cpf_ent_sai: randomize.randomInteger(11), // 11 digitos
+});
+
+let controleValues = randomize.randomInsert('dbo.controle_ent_sai', controleSchemaFunction, 1000);
+
+/*      fila_paciente
+	@integer        id_fila_paciente,
+	@integer        id_paciente,
+	@date           dta_incl_fila,
+	@date           dta_max_fila,
+	@date           data_atend_fila,
+	@integer        prioridade
+*/
+
+let filaSchemaFunction = () => ({
+	id_paciente: randomize.randomInteger(),
+	dta_incl_fila: randomize.randomDate(),
+	dta_max_fila: randomize.randomDate(),
+	dta_atend_fila: randomize.randomDate(),
+	prioridade: randomize.randomBetweeen(1,10)
+});
+
+let filaValues = randomize.randomInsert('dbo.fila_paciente', filaSchemaFunction, 5000);
 
 
-// pacientes_leito
-// id_pac_lei, id_leito, id_paciente, dta_hor_ent, dta_hor_sai, status_pac_lei
-const pacienteLeitoValues = new Array();
-const pacienteLeitoMaxLength = 10;
+/*      Agenda
+	@integer        id_agenda,
+	@string         titulo,
+	@date           dta_hor_init,
+	@date           dta_hor_fin,
+	@boolean        status_agenda,
+	@integer        id_paciente
+*/
 
-for (var index = 0; index < pacienteLeitoMaxLength ; index++) {
-     pacienteLeitoValues[index] = sqlInsert.into('dbo.pacientes_leito').set({
-           status_pac_lei: (( index % 2 === 0 ) ? 1 : 0),
-           id_leito: Math.floor(Math.random() * 10),
-           id_paciente: Math.floor(Math.random() * 10),
-           dta_hor_ent: new Date('01/01/1994').toISOString(),
-           dta_hor_sai: new Date('01/01/1994').toISOString(),
-        }).build();
-}
+let agendaSchemaFunction = () => ({
+	titulo: `Agenda`,
+	dta_hor_ini: randomize.randomDate(),
+	dta_hor_fin: randomize.randomDate(),
+	status_agenda: randomize.randomBoolean(),
+	id_paciente: randomize.randomInteger(2)
+});
 
-// limpeza acomodacao
-// id_limp_acom, id_fun, id_acomo, dta_hor_sol_acom, hor_ini_limp_acom, hor_fim_acom, foto_limpa_acom
-const limpezaAcomodacaoValues = new Array();
-const limpezaAcomodacaoMaxLength = 10;
-
-for (var index = 0; index < limpezaAcomodacaoMaxLength ; index++) {
-     limpezaAcomodacaoValues[index] = sqlInsert.into('dbo.limpeza_acomodacao').set({
-           id_fun: Math.floor(Math.random() * 10),
-           id_acomo: Math.floor(Math.random() * 10),
-           dta_hor_sol_acom: new Date('01/01/1994').toISOString(),
-           hor_ini_limp_acom: new Date('01/01/1994').toISOString(),
-           hor_fim_acom: new Date('01/01/1994').toISOString(),
-           foto_limpa_acom: 'Limpeza Finalizda'
-        }).build();
-}
-
-
-// limpeza leito
-// id_limp_lei, id_fun, id_lei, dta_hor_sol_lei, hor_ini_limp_lei, hor_fim_lei, foto_limpa_lei
-const limpezaLeitoValues = new Array();
-const limpezaLeitoMaxLength = 10;
-
-for (var index = 0; index < limpezaLeitoMaxLength ; index++) {
-     limpezaLeitoValues[index] = sqlInsert.into('dbo.limpeza_leito').set({
-           id_fun: Math.floor(Math.random() * 10),
-           id_leito: Math.floor(Math.random() * 10),
-           dta_hor_sol_lei: new Date('01/01/1994').toISOString(),
-           dta_hor_ini_lei: new Date('01/01/1994').toISOString(),
-           dta_hor_ter_lei: new Date('01/01/1994').toISOString(),
-           foto_limpa_lei: 'Limpeza Finalizda'
-        }).build();
-}
-
-// remedio
-// id_remedio, nome_remedio
-const remedioValues = new Array();
-const remedioMaxLength = 10;
-
-for (var index = 0; index < remedioMaxLength ; index++) {
-     remedioValues[index] = sqlInsert.into('dbo.Remedio').set({
-           nome_remedio: 'Dipirona'
-        }).build();
-}
-
-
-// produto
-// id_prod, descricao_produto
-const produtoValues = new Array();
-const produtoMaxLength = 10;
-
-for (var index = 0; index < produtoMaxLength ; index++) {
-     produtoValues[index] = sqlInsert.into('dbo.Produto').set({
-           descricao_produto: 'Alcool'
-        }).build();
-}
-
-// produto_acomodacao
-// id_prd_aco, id_fun, id_acomo, id_prod, dta_hor_sol_prd, dta_hor_ent_prd, status_prod_acom
-const produtoAcomodacaoValues = new Array();
-const produtoAcomodacaoMaxLength = 10;
-
-for (var index = 0; index < produtoAcomodacaoMaxLength ; index++) {
-     produtoAcomodacaoValues[index] = sqlInsert.into('dbo.produto_acomodacao').set({
-           id_fun:  Math.floor(Math.random() * 10),
-           id_acomo:  Math.floor(Math.random() * 10),
-           id_prod:  Math.floor(Math.random() * 10),
-           dta_hor_sol_prd: new Date('01/01/1994').toISOString(),
-           dta_hor_ent_prd: new Date('01/01/1994').toISOString(),
-           status_prod_acom: (( index % 2 === 0 ) ? 1 : 0),
-        }).build();
-}
-
-// produto_leito
-// id_prd_lei, id_leito, id_fun , id_prod, dta_hor_sol_lei, dta_hor_ent_lei, status_leito
-const produtoLeitoValues = new Array();
-const produtoLeitoMaxLength = 10;
-
-for (var index = 0; index < produtoLeitoMaxLength ; index++) {
-     produtoLeitoValues[index] = sqlInsert.into('dbo.produto_leito').set({
-           id_fun:  Math.floor(Math.random() * 10),
-           id_leito:  Math.floor(Math.random() * 10),
-           id_prod:  Math.floor(Math.random() * 10),
-           dta_hor_sol_prd_lei: new Date('01/01/1994').toISOString(),
-           dta_hor_ent_prd_lei: new Date('01/01/1994').toISOString(),
-           status_leito: (( index % 2 === 0 ) ? 1 : 0),
-        }).build();
-}
-
-// refeicao
-//id_refeicao, horario, descricao_refeicao, calorias
-const refeicaoValues = new Array();
-const refeicaoLength = 10;
-
-for (var index = 0; index < refeicaoLength ; index++) {
-     refeicaoValues[index] = sqlInsert.into('dbo.Refeicao').set({
-           horario: new Date('01/04/2017').toISOString(),
-           descricao_refeicao: `Prato Refeicao ${index}`,
-           calorias: Math.floor(Math.random() * 100),
-        }).build();
-}
-
-
-// refeicao_pacientes
-// id_ref_pac, id_fun, id_paciente, id_refeicao, status_ref_pac, observacao_ref_pac, dta_hor_ref_pac
-const refeicaoPacienteValues = new Array();
-const refeicaoPacienteLength = 10;
-
-for (var index = 0; index < refeicaoPacienteLength ; index++) {
-     refeicaoPacienteValues[index] = sqlInsert.into('dbo.refeicao_pacientes').set({
-           id_fun: Math.floor(Math.random() * 10),
-           id_paciente: Math.floor(Math.random() * 10),
-           id_refeicao: Math.floor(Math.random() * 10),
-           status_ref_pac: (( index % 2 === 0 ) ? 1 : 0),
-           observacao_ref_pac: 'Se alimentou corretamente',
-           dta_hor_ref_pac: new Date('01/04/2017').toISOString(),
-        }).build();
-}
-
-
-// remedio_paciente
-// id_rem_pac, id_fun, id_fun_med, id_paciente, id_remedio, dta_prescricao_rem_pac, dta_hora_apl_rem_pac, qtd_rem_pac, observacao_rem_pac
-const remedioPacienteValues = new Array();
-const remedioPacienteLength = 10;
-
-for (var index = 0; index < remedioPacienteLength ; index++) {
-     remedioPacienteValues[index] = sqlInsert.into('dbo.remedio_paciente').set({
-           id_fun: Math.floor(Math.random() * 10),
-           id_paciente: Math.floor(Math.random() * 10),
-           id_paciente: Math.floor(Math.random() * 10),
-           id_fun_med: Math.floor(Math.random() * 10),
-           id_remedio: Math.floor(Math.random() * 10),
-           dta_prescricao_rem_pac: new Date('01/04/2017').toISOString(),
-           dta_hora_apl_rem_pac: new Date('01/04/2017').toISOString(),
-           qtd_rem_pac: index,
-           observacao_rem_pac: 'Reagiu bem à medicação'
-        }).build();
-}
-
-
-// controle_ent_sai
-//id_ent_sai, dia_hor_ent, dia_hor_sai, cpf_ent_sai, id_acomo
-const controleValues = new Array();
-const controleLength = 10;
-
-for (var index = 0; index < controleLength ; index++) {
-     controleValues[index] = sqlInsert.into('dbo.controle_ent_sai').set({
-           id_acomo: Math.floor(Math.random() * 10),
-           dia_hor_ent: new Date('01/04/2017').toISOString(),
-           dia_hor_sai: new Date('01/04/2017').toISOString(),
-           cpf_ent_sai: Math.floor(Math.random() * 100000000000), // 11 digitos
-        }).build();
-}
-
-// agenda
-// id_agenda, titulo, dta_hor_init, dta_hor_fin, status_agenda, id_paciente
-const agendaValues = new Array();
-const agendaLength = 10;
-
-for (var index = 0; index < agendaLength ; index++) {
-     agendaValues[index] = sqlInsert.into('dbo.Agenda').set({
-           titulo: `Agenda ${index}`,
-           dta_hor_ini: new Date('01/04/2017').toISOString(),
-           dta_hor_fin: new Date('01/04/2017').toISOString(),
-           status_agenda: (( index % 2 === 0 ) ? 1 : 0),
-           id_paciente: Math.floor(Math.random() * 10)
-        }).build();
-}
-
+let agendaValues = randomize.randomInsert('dbo.Agenda', agendaSchemaFunction, 1000);
 
 
 /* Generate SQL Script
@@ -401,40 +462,18 @@ for (var index = 0; index < agendaLength ; index++) {
 *   - Sql Server;
 */
 
+// insert here the 'tableValues' that you wanna generate
 const finalScript = [
-    funcionarioValues,
-    cozinhaValues,
-    enfermeiroValues,
-    limpezaValues,
-    medicoValues,
-    pacienteValues,
-    planoValues,
-    pacientePlanoValues,
-    planoTipoValues,
-    hospitalValues,
-    acomodacaoTipoValues,
-    acomodacaoValues,
-    leitoValues,
-    pacienteLeitoValues,
-    limpezaAcomodacaoValues,
-    limpezaLeitoValues,
-    remedioValues,
-    produtoValues,
-    produtoAcomodacaoValues,
-    produtoLeitoValues,
-    refeicaoValues,
-    refeicaoPacienteValues,
-    remedioPacienteValues,
-    controleValues,
-    agendaValues
 ];
 
 fs.writeFileSync('script_lbd_01.txt', '');
 
-finalScript.forEach( (value, index) =>
-    fs.appendFile('script_lbd_01.txt', value.map( row => '\n' + row.replace(/`/g, '') ),
-    (err) => {
-        if (err) throw err;
-        console.log(`SQL Script ${index} Generated`);
-    })
-);
+Promise
+	.all(finalScript)
+	.then(finalScript => finalScript.forEach( (value, index) =>
+		fs.appendFile('script_lbd_01.txt', value.map( row => '\n' + row.replace(/`/g, '') ),
+		(err) => {
+			if (err) throw err;
+			console.log(`SQL Script ${index} Generated`);
+		})
+	));

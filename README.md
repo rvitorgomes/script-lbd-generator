@@ -1,10 +1,6 @@
-# script-lbd-generator
-SQL Script Generator
+# SQL Script Generator
 
-- Todo:
+* Todo:
   - Random User Names, Birth Date ( https://randomuser.me)
   - Schema Documentation ( Tipos de Especialização, Tipos de Alocação, etc...)
-  - Schema Validation ( https://github.com/hapijs/joi )
-  - Promises Usage
-
-Live your Comments and Suggestions
+  - Joi Schema Validation
